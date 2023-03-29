@@ -82,3 +82,5 @@ class ChatGlobal:
             self.messages_list.append(MsgSelf(self.surface, self.msg_string, "elie"))
             self.reset_input_text()
 
+    def new_msg_others(self, msg):
+        self.messages_list.append(MsgOthers(self.surface, msg, "mahel"))

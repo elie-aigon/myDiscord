@@ -1,5 +1,5 @@
-HOST = '192.168.0.235'
-PORT = 40000
+HOST = '127.0.0.1'
+PORT = 50000
 
 import socket, sys, threading
  
@@ -11,9 +11,9 @@ class ThreadClient(threading.Thread):
         
     def run(self):
         # Dialogue avec le client :
-        nom = self.getName()        # Chaque thread possède un nom
+        nom = self.name       # Chaque thread possède un nom
         while 1:
-            msgClient = self.connexion.recv(1024)
+            msgClient = self.connexion.recv(1024).decode()
             if msgClient.upper() == "FIN" or msgClient =="":
                 break
             message = "%s> %s" % (nom, msgClient)
@@ -21,7 +21,7 @@ class ThreadClient(threading.Thread):
             # Faire suivre le message à tous les autres clients :
             for cle in conn_client:
                 if cle != nom:      # ne pas le renvoyer à l'émetteur
-                    conn_client[cle].send(message)
+                    conn_client[cle].send(message.encode())
                     
         # Fermeture de la connexion :
         self.connexion.close()      # couper la connexion côté serveur
@@ -47,9 +47,9 @@ while 1:
     th = ThreadClient(connexion)
     th.start()
     # Mémoriser la connexion dans le dictionnaire : 
-    it = th.getName()        # identifiant du thread
+    it = th.name        # identifiant du thread
     conn_client[it] = connexion
     print ("Client %s connecté, adresse IP %s, port %s." %\
            (it, adresse[0], adresse[1]))
     # Dialogue avec le client :
-    connexion.send("Vous êtes connecté. Envoyez vos messages.")
+    connexion.send("Vous êtes connecté. Envoyez vos messages.".encode())
