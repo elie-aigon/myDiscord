@@ -1,16 +1,36 @@
 from Settings import *
 from MsgOthers import MsgOthers
 from MsgSelf import MsgSelf
+from StatusUsers import StatusUsers
+from User import User
 
 class ChatGlobal:
-    def __init__(self, surface):
-        self.surface = surface
+    def __init__(self):
+        # gen users
+        self.cnx = mysql.connector.connect(user= 'root', password= "root", 
+                        host=ip, database= "mydiscord")
+        self.curseur = self.cnx.cursor()
+        self.curseur.execute("SELECT * FROM users;")
+
+        self.results = self.curseur.fetchall()
+
+        self.users = []
+        for user in self.results:
+            self.users.append(User(user[1], user[2], user[3], user[4]))
+
+        # UI
+        self.surface = pygame.display.set_mode(windowsize)
+        pygame.display.set_caption("My Discord")
+
         # input setup
         self.current_line_input = []
         self.lines_input = []
+
         # msg setup
         self.messages_list = []
         
+        self.stats = StatusUsers(self.surface, self.users)
+
         self.laod_ressources()
 
     def laod_ressources(self):
@@ -29,7 +49,7 @@ class ChatGlobal:
             msg.render_self()
         pygame.draw.rect(self.surface, grey_black, self.rect_online)
         pygame.draw.rect(self.surface, grey_white, self.rect_input, border_radius=20)
-
+        self.stats.render_self()
         if len(self.lines_input) > 0:
             y = 0
             for line in self.lines_input:

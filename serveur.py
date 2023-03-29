@@ -6,14 +6,14 @@ serveur = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host, port = "localhost", 50000
 serveur.bind((host, port))
 serveur.listen(4)
-client_online = True
+clients_online = True
 socket_obj = [serveur]
 
 print("Bienvenue dans le chat!!")
 
-while client_online:
+while clients_online:
 	if keyboard.read_key() == "a":
-		client_online = False
+		clients_online = False
 	liste_read, liste_write, exception = select.select(socket_obj, [], socket_obj)
 
 	for obj in liste_read:
