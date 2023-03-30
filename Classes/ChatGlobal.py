@@ -5,19 +5,20 @@ from StatusUsers import StatusUsers
 from User import User
 
 class ChatGlobal:
-    def __init__(self):
+    def __init__(self, username):
+
         # gen users
         self.cnx = mysql.connector.connect(user= 'root', password= "root", 
                         host=ip, database= "mydiscord")
         self.curseur = self.cnx.cursor()
         self.curseur.execute("SELECT * FROM users;")
-
         self.results = self.curseur.fetchall()
-
         self.users = []
         for user in self.results:
             self.users.append(User(user[1], user[2], user[3], user[4]))
-
+        self.curseur.execute("UPDATE users Set is_online = 1 WHERE username = %s;", (username,))
+        self.cnx.commit()
+        print(self.users[0].is_online)
         # UI
         self.surface = pygame.display.set_mode(windowsize)
         pygame.display.set_caption("My Discord")
@@ -29,7 +30,7 @@ class ChatGlobal:
         # msg setup
         self.messages_list = []
         
-        self.stats = StatusUsers(self.surface, self.users)
+        self.stats = StatusUsers(self.surface)
 
         self.laod_ressources()
 
@@ -51,7 +52,7 @@ class ChatGlobal:
         pygame.draw.rect(self.surface, grey_white, self.rect_input, border_radius=20)
         self.stats.render_self()
         if len(self.lines_input) > 0:
-            y = 0
+            y = 0 
             for line in self.lines_input:
                 self.line_aff = font_small.render("".join(line), True, white)
                 self.surface.blit(self.line_aff, (self.rect_input.x + 15, self.rect_input.y + 25 - (self.line_aff.get_height()//2) + y))
@@ -76,11 +77,12 @@ class ChatGlobal:
             self.msg_string = ""
             for element in self.lines_input:
                 self.msg_string = self.msg_string + "".join(element)
-            if len(self.messages_list) > 0:
-                for i, msg in enumerate(self.messages_list):
-                    msg.set_rect_pos(50)
             self.messages_list.append(MsgSelf(self.surface, self.msg_string, "elie"))
+            for msg in self.messages_list[:-1]:
+                msg.set_rect_pos(self.messages_list[-1].rect.height)
             self.reset_input_text()
 
     def new_msg_others(self, msg):
-        self.messages_list.append(MsgOthers(self.surface, msg, "mahel"))
+        self.messages_list.append(MsgOthers(self.surface, msg))
+        for msg in self.messages_list[:-1]:
+            msg.set_rect_pos(self.messages_list[-1].rect.height)

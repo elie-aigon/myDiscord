@@ -1,12 +1,16 @@
 from Settings import *
 
 class MsgOthers:
-    def __init__(self, surface, message, name):
+    def __init__(self, surface, message):
         self.surface = surface
         self.lines = []
-        if len(message) > 45:
+        self.offset = 0
+        self.message_split = message.split("%")
+        self.name = self.message_split[0]
+        self.message = self.message_split[1]
+        if len(self.message) > 45:
             line = []
-            for word in message.split():
+            for word in self.message.split():
                 line.append(word)
                 if len(" ".join(line)) >= 44:
                     line = line[:-1]
@@ -15,10 +19,8 @@ class MsgOthers:
                     i = 1
             self.lines.append(" ".join(line))
         else:
-            self.lines.append(message)
-        print(self.lines)
-        self.rect = pygame.Rect(0, 350 -(20 * len(self.lines)), 300, 50)
-        self.name = name
+            self.lines.append(self.message)
+        self.rect = pygame.Rect(0, 400 -(20 * len(self.lines)), 300, 50)
         self.name_aff = font_mid.render(self.name, True, white)
         self.create_message()
         
@@ -30,7 +32,7 @@ class MsgOthers:
 
     def set_rect_pos(self, offset):
         self.offset += offset
-        self.rect = pygame.Rect(300, 400 -(20 * len(self.lines)) - self.offset, 300, 50)
+        self.rect = pygame.Rect(0, 400 -(20 * len(self.lines)) - self.offset, 300, 50)
 
     def render_self(self):
         pygame.draw.rect(self.surface, grey, self.rect)

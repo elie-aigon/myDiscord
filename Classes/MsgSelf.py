@@ -38,5 +38,6 @@ class MsgSelf:
         self.surface.blit(self.name_aff, (self.rect.x + self.rect.width - self.name_aff.get_width() - 10, self.rect.y))
         y = 0
         for line in self.lines_aff:
-            self.surface.blit(line, (self.rect.x + 10, self.rect.y + 20 + y))
+            self.surface.blit(line, (self.rect.x + self.rect.width - line.get_width(), self.rect.y + 20 + y))
             y += 13
+

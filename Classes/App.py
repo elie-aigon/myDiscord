@@ -91,7 +91,8 @@ class App:
                 if self.pwd_input.get() == user[1]:
 
                     self.root.destroy()
-                    self.cg = ChatGlobal()
+                    print(user[0])
+                    self.cg = ChatGlobal(user[0])
                     self.state = 1
                     break
 

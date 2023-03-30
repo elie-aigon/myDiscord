@@ -1,17 +1,16 @@
 from Settings import *
-
+from User import User
 class StatusUsers:
-    def __init__(self, surface, users_list):
+    def __init__(self, surface):
         self.surface = surface
-        self.users_list = users_list
+
         self.pos = (700, 100)
 
         self.online = font_big.render("Online", True, green)
         self.offline = font_big.render("Offline", True, grey_white)
 
-        self.gen_users_list()
-
     def render_self(self):
+        self.update_users_list()
         self.surface.blit(self.online, (self.pos[0] - self.online.get_width()//2, self.pos[1]))
         self.surface.blit(self.offline, (self.pos[0] - self.offline.get_width()//2, self.pos[1] + 150))
         y_online = 30
@@ -34,3 +33,14 @@ class StatusUsers:
                 self.online_users.append(user)
             else:
                 self.offline_users.append(user)
+
+    def update_users_list(self):
+        self.cnx = mysql.connector.connect(user= 'root', password= "root", 
+                host=ip, database= "mydiscord")
+        self.curseur = self.cnx.cursor()
+        self.curseur.execute("SELECT * FROM users;")
+        self.results = self.curseur.fetchall()
+        self.users_list = []
+        for user in self.results:
+            self.users_list.append(User(user[1], user[2], user[3], user[4]))
+        self.gen_users_list()

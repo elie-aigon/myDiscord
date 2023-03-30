@@ -1,37 +1,56 @@
-import socket, keyboard
-from threading import Thread
-import select
+HOST = '127.0.0.1'
+PORT = 50000
 
-serveur = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host, port = "localhost", 50000
-serveur.bind((host, port))
-serveur.listen(4)
-clients_online = True
-socket_obj = [serveur]
+import socket, sys, threading
+ 
+class ThreadClient(threading.Thread):
+    def __init__(self, conn):
+        threading.Thread.__init__(self)
+        self.connexion = conn
+        
+    def run(self):
 
-print("Bienvenue dans le chat!!")
+        nom = self.name
+        while 1:
+            try:
+                msgClient = self.connexion.recv(1024).decode()
+            except :
+                print('Disconnect')
+                break
+            if msgClient.upper() == "FIN" or msgClient =="":
+                break
 
-while clients_online:
-	if keyboard.read_key() == "a":
-		clients_online = False
-	liste_read, liste_write, exception = select.select(socket_obj, [], socket_obj)
+            msg = (nom + "%" + msgClient)
+            print(msg)
+            for cle in conn_client:
+                if cle != nom:
+                    conn_client[cle].send(msg.encode())
+                    
 
-	for obj in liste_read:
-		if obj is serveur:
-			client, adresse = serveur.accept()
-			print(f"l'object client socket:- adresse: {adresse}")
-			socket_obj.append(client)
-			print(socket_obj)
+        self.connexion.close()
+        del conn_client[nom]
+        print ("Client %s déconnecté." % nom)
 
-		else:
-			datas = obj.recv(128).decode("utf-8")
-			if datas:
-				for x in socket_obj:
-					if x != obj:
-						x.send(datas.encode("utf-8"))
-				
 
-			else:
-				socket_obj.remove(obj)
-				print("1 participant est deconnecte")
-				print(f"{len(socket_obj) - 1} participants restants")
+mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+try:
+    mySocket.bind((HOST, PORT))
+except socket.error:
+    print ("La liaison du socket à l'adresse choisie a échoué.")
+    sys.exit()
+print ("Serveur prêt, en attente de requêtes ...")
+mySocket.listen(5)
+
+conn_client = {}
+while 1:    
+    connexion, adresse = mySocket.accept()
+
+    th = ThreadClient(connexion)
+    th.start()
+
+    it = th.name
+    conn_client[it] = connexion
+    print ("Client %s connecté, adresse IP %s, port %s." %\
+           (it, adresse[0], adresse[1]))
+
+    connexion.send("Serveur % Vous êtes connecté. Envoyez vos messages.".encode())
