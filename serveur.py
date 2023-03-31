@@ -1,31 +1,38 @@
 HOST = '127.0.0.1'
 PORT = 50000
 
-import socket, sys, threading
+import socket, sys, threading, mysql.connector
  
+cnx = mysql.connector.connect(user= 'public', password= "root", 
+                host=HOST, database= "mydiscord")
+curseur = cnx.cursor()
+
 class ThreadClient(threading.Thread):
     def __init__(self, conn):
         threading.Thread.__init__(self)
         self.connexion = conn
         
     def run(self):
-
         nom = self.name
         while 1:
             try:
-                msgClient = self.connexion.recv(1024).decode()
+                msgRec = self.connexion.recv(1024).decode()
             except :
                 print('Disconnect')
                 break
-            if msgClient.upper() == "FIN" or msgClient =="":
-                break
+            if msgRec != "":
+                msg = msgRec.split("%")
+                name = msg[0]
+                time = msg[1]
+                message = "".join(msg[2:])
+                msg = ( name + "%"+ time +  "%"+ message)
+                curseur.execute("INSERT historique (username, message, channel, time) VALUES (%s, %s, 1, %s)", (name, message, time))
+                cnx.commit()
 
-            msg = (nom + "%" + msgClient)
-            print(msg)
-            for cle in conn_client:
-                if cle != nom:
-                    conn_client[cle].send(msg.encode())
-                    
+                for cle in conn_client:
+                    if cle != nom:
+                        conn_client[cle].send(msg.encode())
+                        
 
         self.connexion.close()
         del conn_client[nom]

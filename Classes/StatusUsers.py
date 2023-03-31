@@ -35,8 +35,8 @@ class StatusUsers:
                 self.offline_users.append(user)
 
     def update_users_list(self):
-        self.cnx = mysql.connector.connect(user= 'root', password= "root", 
-                host=ip, database= "mydiscord")
+        self.cnx = mysql.connector.connect(user= 'public', password= "root", 
+                host=HOST, database= "mydiscord")
         self.curseur = self.cnx.cursor()
         self.curseur.execute("SELECT * FROM users;")
         self.results = self.curseur.fetchall()

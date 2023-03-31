@@ -1,10 +1,10 @@
-import pygame, sys, random, json, random, socket, mysql.connector
+import pygame, sys, random, json, random, socket, mysql.connector, datetime
 from threading import Thread
 import tkinter as tk
 from tkinter import ttk
 import tkinter.messagebox as mbox
 
-ip = "127.0.0.1"
+HOST = "127.0.0.1"
 
 pygame.init()
 pygame.mixer.init()
@@ -25,4 +25,5 @@ grey_white_hexa = "#5B5A5E"
 font_mid = pygame.font.Font("Data/Font/LEMONMILK-MediumItalic.otf", 12) # message font
 font_big = pygame.font.Font("Data/Font/LEMONMILK-MediumItalic.otf", 20) # status font
 font_small = pygame.font.Font("Data/Font/LEMONMILK-MediumItalic.otf", 10) # input font
+font_time = pygame.font.Font("Data/Font/LEMONMILK-MediumItalic.otf", 8) # input TIme
 font_title = pygame.font.Font("Data/Font/LEMONMILK-MediumItalic.otf", 75)

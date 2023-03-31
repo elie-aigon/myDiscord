@@ -2,11 +2,11 @@ from Settings import *
 from App import App
 
 pygame.init()
-
+date = datetime.datetime.now()
 app = App()
 
 def Send(socket, msg):
-		socket.send(msg.encode("utf-8"))
+		socket.send((app.cg.username + "%" + date.strftime('%d') + "/" + date.strftime('%m') + "/" + date.strftime('%Y') + "-" + date.strftime('%H') + ":" + date.strftime('%M') +"%" + msg).encode("utf-8"))
 
 def Recep(socket):
     while True:
@@ -15,8 +15,6 @@ def Recep(socket):
         if requet != "":
             app.cg.new_msg_others(requet)
 
-
-HOST = "127.0.0.1"
 PORT = 50000
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
@@ -26,7 +24,6 @@ except socket.error:
 	sys.exit()
 
 exchange = [Thread(target= Recep, args=[client])]
-
 
 for i in exchange:
 	i.start()

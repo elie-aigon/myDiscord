@@ -6,10 +6,10 @@ from User import User
 
 class ChatGlobal:
     def __init__(self, username):
-
+        self.username = username
         # gen users
-        self.cnx = mysql.connector.connect(user= 'root', password= "root", 
-                        host=ip, database= "mydiscord")
+        self.cnx = mysql.connector.connect(user= 'public', password= "root", 
+                        host=HOST, database= "mydiscord")
         self.curseur = self.cnx.cursor()
         self.curseur.execute("SELECT * FROM users;")
         self.results = self.curseur.fetchall()
@@ -18,7 +18,6 @@ class ChatGlobal:
             self.users.append(User(user[1], user[2], user[3], user[4]))
         self.curseur.execute("UPDATE users Set is_online = 1 WHERE username = %s;", (username,))
         self.cnx.commit()
-        print(self.users[0].is_online)
         # UI
         self.surface = pygame.display.set_mode(windowsize)
         pygame.display.set_caption("My Discord")
